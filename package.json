@@ -1,0 +1,36 @@
+{
+  "name": "@hatsprotocol/hsg-sdk",
+  "version": "0.0.1",
+  "author": "Haberdasher Labs",
+  "license": "MIT",
+  "main": "dist/hsg-sdk.cjs.js",
+  "module": "dist/hsg-sdk.esm.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest -- -i",
+    "build": "rollup -c",
+    "eslint": "eslint . --ext '.ts,.tsx'",
+    "eslint:fix": "eslint . --ext '.ts,.tsx' --fix"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@rollup/plugin-json": "^6.0.1",
+    "@types/jest": "^29.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "@viem/anvil": "^0.0.6",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.0",
+    "rollup": "^4.6.1",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.2",
+    "viem": "^1.11.0"
+  }
+}
