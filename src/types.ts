@@ -23,3 +23,17 @@ export interface DeployMultiHatsSignerGateAndSafeResult
 export interface DdeployMultiHatsSignerGateResult extends TransactionResult {
   newMultiHsgInstance: Address;
 }
+
+export interface HsgClaimSignerResult extends TransactionResult {}
+
+export interface MhsgClaimSignerResult extends TransactionResult {}
+
+export interface MhsgAddSignerHatsResult extends TransactionResult {}
+
+export interface SetTargetThresholdResult extends TransactionResult {}
+
+export interface SetMinThresholdResult extends TransactionResult {}
+
+export interface ReconcileSignerCountResult extends TransactionResult {}
+
+export interface RemoveSignerResult extends TransactionResult {}

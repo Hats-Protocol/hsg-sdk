@@ -1,6 +1,7 @@
 import { PublicClient, WalletClient, decodeEventLog } from "viem";
 import {
   HATS_SIGNER_GATE_FACTORY,
+  HATS_SIGNER_GATE_BASE_ABI,
   HATS_SIGNER_GATE_FACTORY_ABI,
   HATS_SIGNER_GATE_IMPLEMENTATION,
   HATS_SIGNER_GATE_ABI,
@@ -22,6 +23,13 @@ import {
   DeployHatsSignerGateResult,
   DeployMultiHatsSignerGateAndSafeResult,
   DdeployMultiHatsSignerGateResult,
+  HsgClaimSignerResult,
+  MhsgClaimSignerResult,
+  MhsgAddSignerHatsResult,
+  SetTargetThresholdResult,
+  SetMinThresholdResult,
+  ReconcileSignerCountResult,
+  RemoveSignerResult,
 } from "./types";
 
 export class HatsSignerGateClient {
@@ -352,4 +360,298 @@ export class HatsSignerGateClient {
   /*//////////////////////////////////////////////////////////////
                             HSG 
   //////////////////////////////////////////////////////////////*/
+
+  async hsgClaimSigner({
+    account,
+    hsgInstance,
+  }: {
+    account: Account | Address;
+    hsgInstance: Address;
+  }): Promise<HsgClaimSignerResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: hsgInstance,
+        abi: HATS_SIGNER_GATE_ABI,
+        functionName: "claimSigner",
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async hsgIsValidSigner({
+    hsgInstance,
+    address,
+  }: {
+    hsgInstance: Address;
+    address: Address;
+  }): Promise<boolean> {
+    const isValid = await this._publicClient.readContract({
+      address: hsgInstance,
+      abi: HATS_SIGNER_GATE_ABI,
+      functionName: "isValidSigner",
+      args: [address],
+    });
+
+    return isValid;
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                            MHSG 
+  //////////////////////////////////////////////////////////////*/
+
+  async mhsgClaimSigner({
+    account,
+    mhsgInstance,
+    hatId,
+  }: {
+    account: Account | Address;
+    mhsgInstance: Address;
+    hatId: bigint;
+  }): Promise<MhsgClaimSignerResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: mhsgInstance,
+        abi: MULTI_HATS_SIGNER_GATE_ABI,
+        functionName: "claimSigner",
+        args: [hatId],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async mhsgIsValidSigner({
+    mhsgInstance,
+    address,
+  }: {
+    mhsgInstance: Address;
+    address: Address;
+  }): Promise<boolean> {
+    const isValid = await this._publicClient.readContract({
+      address: mhsgInstance,
+      abi: MULTI_HATS_SIGNER_GATE_ABI,
+      functionName: "isValidSigner",
+      args: [address],
+    });
+
+    return isValid;
+  }
+
+  async mhsgAddSignerHats({
+    account,
+    mhsgInstance,
+    newSignerHats,
+  }: {
+    account: Account | Address;
+    mhsgInstance: Address;
+    newSignerHats: bigint[];
+  }): Promise<MhsgAddSignerHatsResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: mhsgInstance,
+        abi: MULTI_HATS_SIGNER_GATE_ABI,
+        functionName: "addSignerHats",
+        args: [newSignerHats],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async mhsgIsValidSignerHat({
+    mhsgInstance,
+    hatId,
+  }: {
+    mhsgInstance: Address;
+    hatId: bigint;
+  }): Promise<boolean> {
+    const isValid = await this._publicClient.readContract({
+      address: mhsgInstance,
+      abi: MULTI_HATS_SIGNER_GATE_ABI,
+      functionName: "isValidSignerHat",
+      args: [hatId],
+    });
+
+    return isValid;
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                        Shared Functions 
+  //////////////////////////////////////////////////////////////*/
+
+  async setTargetThreshold({
+    account,
+    instance,
+    targetThreshold,
+  }: {
+    account: Account | Address;
+    instance: Address;
+    targetThreshold: bigint;
+  }): Promise<SetTargetThresholdResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "setTargetThreshold",
+        args: [targetThreshold],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async setMinThreshold({
+    account,
+    instance,
+    minThreshold,
+  }: {
+    account: Account | Address;
+    instance: Address;
+    minThreshold: bigint;
+  }): Promise<SetMinThresholdResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "setMinThreshold",
+        args: [minThreshold],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async reconcileSignerCount({
+    account,
+    instance,
+  }: {
+    account: Account | Address;
+    instance: Address;
+  }): Promise<ReconcileSignerCountResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "reconcileSignerCount",
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
+  async validSignerCount({ instance }: { instance: Address }): Promise<bigint> {
+    const count = await this._publicClient.readContract({
+      address: instance,
+      abi: MULTI_HATS_SIGNER_GATE_ABI,
+      functionName: "validSignerCount",
+    });
+
+    return count;
+  }
+
+  async removeSigner({
+    account,
+    instance,
+    signer,
+  }: {
+    account: Account | Address;
+    instance: Address;
+    signer: Address;
+  }): Promise<RemoveSignerResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "removeSigner",
+        args: [signer],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
 }
