@@ -1,4 +1,4 @@
-import { HatsSignerGateClient } from "client";
+import { HatsSignerGateClient } from "./client";
 import {
   HATS_SIGNER_GATE_FACTORY_ABI,
   HATS_SIGNER_GATE_ABI,

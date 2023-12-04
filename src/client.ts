@@ -405,6 +405,20 @@ export class HatsSignerGateClient {
     return isValid;
   }
 
+  async hsgSignersHatId({
+    hsgInstance,
+  }: {
+    hsgInstance: Address;
+  }): Promise<bigint> {
+    const signersHatId = await this._publicClient.readContract({
+      address: hsgInstance,
+      abi: HATS_SIGNER_GATE_ABI,
+      functionName: "signersHatId",
+    });
+
+    return signersHatId;
+  }
+
   /*//////////////////////////////////////////////////////////////
                             MHSG 
   //////////////////////////////////////////////////////////////*/
@@ -612,7 +626,7 @@ export class HatsSignerGateClient {
   async validSignerCount({ instance }: { instance: Address }): Promise<bigint> {
     const count = await this._publicClient.readContract({
       address: instance,
-      abi: MULTI_HATS_SIGNER_GATE_ABI,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
       functionName: "validSignerCount",
     });
 
@@ -650,5 +664,49 @@ export class HatsSignerGateClient {
     } catch (err) {
       getError(err);
     }
+  }
+
+  async getSafe({ instance }: { instance: Address }): Promise<Address> {
+    const safe = await this._publicClient.readContract({
+      address: instance,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
+      functionName: "safe",
+    });
+
+    return safe;
+  }
+
+  async getMinThreshold({ instance }: { instance: Address }): Promise<bigint> {
+    const minThreshold = await this._publicClient.readContract({
+      address: instance,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
+      functionName: "minThreshold",
+    });
+
+    return minThreshold;
+  }
+
+  async getTargetThreshold({
+    instance,
+  }: {
+    instance: Address;
+  }): Promise<bigint> {
+    const targetThreshold = await this._publicClient.readContract({
+      address: instance,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
+      functionName: "targetThreshold",
+    });
+
+    return targetThreshold;
+  }
+
+  async getMaxSigners({ instance }: { instance: Address }): Promise<bigint> {
+    const maxSigners = await this._publicClient.readContract({
+      address: instance,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
+      functionName: "maxSigners",
+    });
+
+    return maxSigners;
   }
 }
