@@ -14,6 +14,8 @@ import {
   ChainNotSupportedError,
   getError,
 } from "./errors";
+import { checkWriteFunctionArgs } from "./utils";
+import { HSG_METADATA, MHSG_METADATA } from "./metadata";
 import type { Account, Address } from "viem";
 import {
   DeployHatsSignerGateAndSafeResult,
@@ -27,6 +29,10 @@ import {
   SetMinThresholdResult,
   ReconcileSignerCountResult,
   RemoveSignerResult,
+  WriteFunction,
+  CallInstanceWriteFunctionResult,
+  HsgMetadata,
+  HsgType,
 } from "./types";
 
 export class HatsSignerGateClient {
@@ -708,5 +714,60 @@ export class HatsSignerGateClient {
     });
 
     return maxSigners;
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                            MHSG 
+  //////////////////////////////////////////////////////////////*/
+
+  getMetadata(type: HsgType): HsgMetadata {
+    if (type === "HSG") {
+      return HSG_METADATA;
+    } else if (type === "MHSG") {
+      return MHSG_METADATA;
+    } else {
+      throw new Error(`Error: type ${type} is not supproted`);
+    }
+  }
+
+  async callInstanceWriteFunction({
+    account,
+    type,
+    instance,
+    func,
+    args,
+  }: {
+    account: Account | Address;
+    type: HsgType;
+    instance: Address;
+    func: WriteFunction;
+    args: unknown[];
+  }): Promise<CallInstanceWriteFunctionResult> {
+    const metadata = this.getMetadata(type);
+
+    checkWriteFunctionArgs({ func, args });
+
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: metadata.abi,
+        functionName: func.functionName,
+        args: args,
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
   }
 }

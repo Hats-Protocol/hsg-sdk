@@ -13,7 +13,7 @@ import type {
 import type { Anvil } from "@viem/anvil";
 import "dotenv/config";
 
-describe("Client Tests", () => {
+describe("Client Tests With Metadata", () => {
   let publicClient: PublicClient;
   let walletClient: WalletClient;
   let hsgClient: HatsSignerGateClient;
@@ -134,9 +134,13 @@ describe("Client Tests", () => {
 
     describe("Account claims signer rights", () => {
       beforeAll(async () => {
-        await hsgClient.hsgClaimSigner({
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
           account: account2,
-          hsgInstance: hsg,
+          type: "HSG",
+          instance: hsg,
+          func: metadata.writeFunctions[0],
+          args: [],
         });
       });
 
@@ -153,9 +157,13 @@ describe("Client Tests", () => {
 
     describe("Reconcile Signer Count", () => {
       beforeAll(async () => {
-        await hsgClient.reconcileSignerCount({
-          account: account1,
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account2,
+          type: "HSG",
           instance: hsg,
+          func: metadata.writeFunctions[1],
+          args: [],
         });
       });
 
@@ -191,10 +199,14 @@ describe("Client Tests", () => {
           from: account2.address,
           to: account1.address,
         });
-        await hsgClient.removeSigner({
-          account: account1,
+
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account2,
+          type: "HSG",
           instance: hsg,
-          signer: account2.address,
+          func: metadata.writeFunctions[2],
+          args: [account2.address],
         });
       });
 

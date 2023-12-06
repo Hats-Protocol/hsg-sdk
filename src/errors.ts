@@ -189,6 +189,20 @@ export class NoReentryAllowedError extends Error {
   }
 }
 
+export class ParametersLengthsMismatchError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ParametersLengthsMismatchError";
+  }
+}
+
+export class InvalidParamError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidParamError";
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export function getError(err: unknown): never {

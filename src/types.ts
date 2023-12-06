@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address, Abi } from "viem";
 
 export interface TransactionResult {
   status: "success" | "reverted";
@@ -37,3 +37,48 @@ export interface SetMinThresholdResult extends TransactionResult {}
 export interface ReconcileSignerCountResult extends TransactionResult {}
 
 export interface RemoveSignerResult extends TransactionResult {}
+
+export interface CallInstanceWriteFunctionResult extends TransactionResult {}
+
+export type HsgMetadata = {
+  roles: Role[];
+  writeFunctions: WriteFunction[];
+  abi: Abi;
+};
+
+export type Role = {
+  id: string;
+  name: string;
+  criteria: string;
+  hatAdminsFallback?: boolean;
+};
+
+export type WriteFunction = {
+  roles: string[];
+  functionName: string;
+  label: string;
+  description: string;
+  primary?: boolean;
+  args: WriteFunctionArg[];
+};
+
+export type WriteFunctionArg = {
+  name: string;
+  description: string;
+  type: string;
+  displayType: string;
+  optional?: boolean;
+};
+
+export type ArgumentTsType =
+  | "number"
+  | "bigint"
+  | "string"
+  | "boolean"
+  | "number[]"
+  | "bigint[]"
+  | "string[]"
+  | "boolean[]"
+  | "unknown";
+
+export type HsgType = "HSG" | "MHSG";
