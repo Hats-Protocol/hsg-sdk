@@ -13,7 +13,7 @@ import type {
 import type { Anvil } from "@viem/anvil";
 import "dotenv/config";
 
-describe("Client Tests", () => {
+describe("Client Tests With Metadata", () => {
   let publicClient: PublicClient;
   let walletClient: WalletClient;
   let hsgClient: HatsSignerGateClient;
@@ -134,9 +134,13 @@ describe("Client Tests", () => {
 
     describe("Account claims signer rights", () => {
       beforeAll(async () => {
-        await hsgClient.hsgClaimSigner({
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
           account: account2,
-          hsgInstance: hsg,
+          type: "HSG",
+          instance: hsg,
+          func: metadata.writeFunctions[0],
+          args: [],
         });
       });
 
@@ -153,9 +157,13 @@ describe("Client Tests", () => {
 
     describe("Reconcile Signer Count", () => {
       beforeAll(async () => {
-        await hsgClient.reconcileSignerCount({
-          account: account1,
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account2,
+          type: "HSG",
           instance: hsg,
+          func: metadata.writeFunctions[1],
+          args: [],
         });
       });
 
@@ -191,10 +199,14 @@ describe("Client Tests", () => {
           from: account2.address,
           to: account1.address,
         });
-        await hsgClient.removeSigner({
-          account: account1,
+
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account2,
+          type: "HSG",
           instance: hsg,
-          signer: account2.address,
+          func: metadata.writeFunctions[2],
+          args: [account2.address],
         });
       });
 
@@ -206,6 +218,64 @@ describe("Client Tests", () => {
         });
         expect(numSigners).toBe(0n);
         expect(isValidSigner).toBe(false);
+      });
+    });
+
+    describe("Test Set Min Threshold", () => {
+      beforeAll(async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account1,
+          type: "HSG",
+          instance: hsg,
+          func: metadata.writeFunctions[3],
+          args: [1n],
+        });
+      });
+
+      test("Test set min threshold", async () => {
+        const minThreshod = await hsgClient.getMinThreshold({ instance: hsg });
+        expect(minThreshod).toBe(1n);
+      });
+    });
+
+    describe("Test Set Terget Threshold", () => {
+      beforeAll(async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account1,
+          type: "HSG",
+          instance: hsg,
+          func: metadata.writeFunctions[5],
+          args: [2n],
+        });
+      });
+
+      test("Test set target threshold", async () => {
+        const targetThreshod = await hsgClient.getTargetThreshold({
+          instance: hsg,
+        });
+        expect(targetThreshod).toBe(2n);
+      });
+    });
+
+    describe("Test Set Owner Hat", () => {
+      beforeAll(async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.callInstanceWriteFunction({
+          account: account1,
+          type: "HSG",
+          instance: hsg,
+          func: metadata.writeFunctions[4],
+          args: [hat1_2, "0x3bc1A0Ad72417f2d411118085256fC53CBdDd137"],
+        });
+      });
+
+      test("Test set owner hat", async () => {
+        const ownerHat = await hsgClient.getOwnerHat({
+          instance: hsg,
+        });
+        expect(ownerHat).toBe(hat1_2);
       });
     });
   });

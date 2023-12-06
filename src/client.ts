@@ -29,6 +29,7 @@ import {
   SetMinThresholdResult,
   ReconcileSignerCountResult,
   RemoveSignerResult,
+  SetOwnerHatResult,
   WriteFunction,
   CallInstanceWriteFunctionResult,
   HsgMetadata,
@@ -599,6 +600,41 @@ export class HatsSignerGateClient {
     }
   }
 
+  async setOwnerHat({
+    account,
+    instance,
+    newOwnerHat,
+    hatsContractAddress,
+  }: {
+    account: Account | Address;
+    instance: Address;
+    newOwnerHat: bigint;
+    hatsContractAddress: Address;
+  }): Promise<SetOwnerHatResult> {
+    try {
+      const { request } = await this._publicClient.simulateContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "setOwnerHat",
+        args: [newOwnerHat, hatsContractAddress],
+        account,
+      });
+
+      const hash = await this._walletClient.writeContract(request);
+
+      const receipt = await this._publicClient.waitForTransactionReceipt({
+        hash,
+      });
+
+      return {
+        status: receipt.status,
+        transactionHash: receipt.transactionHash,
+      };
+    } catch (err) {
+      getError(err);
+    }
+  }
+
   async reconcileSignerCount({
     account,
     instance,
@@ -714,6 +750,16 @@ export class HatsSignerGateClient {
     });
 
     return maxSigners;
+  }
+
+  async getOwnerHat({ instance }: { instance: Address }): Promise<bigint> {
+    const ownerHat = await this._publicClient.readContract({
+      address: instance,
+      abi: HATS_SIGNER_GATE_BASE_ABI,
+      functionName: "ownerHat",
+    });
+
+    return ownerHat;
   }
 
   /*//////////////////////////////////////////////////////////////

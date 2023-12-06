@@ -40,6 +40,8 @@ export interface RemoveSignerResult extends TransactionResult {}
 
 export interface CallInstanceWriteFunctionResult extends TransactionResult {}
 
+export interface SetOwnerHatResult extends TransactionResult {}
+
 export type HsgMetadata = {
   roles: Role[];
   writeFunctions: WriteFunction[];
