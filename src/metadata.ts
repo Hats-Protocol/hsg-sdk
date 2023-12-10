@@ -4,13 +4,13 @@ import { MULTI_HATS_SIGNER_GATE_ABI, HATS_SIGNER_GATE_ABI } from "./constants";
 export const HSG_METADATA: HsgMetadata = {
   customRoles: [
     {
-      id: "hsgSignersHat",
-      name: "HSG Signers Hat",
+      id: "hsgSigner",
+      name: "HSG Signer",
       criteria: "signersHatId",
     },
     {
-      id: "hsgOwnerHat",
-      name: "HSG Owner Hat",
+      id: "hsgOwner",
+      name: "HSG Owner",
       criteria: "ownerHat",
     },
   ],
@@ -103,13 +103,13 @@ export const HSG_METADATA: HsgMetadata = {
 export const MHSG_METADATA: HsgMetadata = {
   customRoles: [
     {
-      id: "mhsgSignersHat",
-      name: "MHSG Signers Hat",
+      id: "hsgSigner",
+      name: "MHSG Signer",
       criteria: "validSignerHats",
     },
     {
-      id: "mhsgOwnerHat",
-      name: "HSG Owner Hat",
+      id: "hsgOwner",
+      name: "MHSG Owner",
       criteria: "ownerHat",
     },
   ],
