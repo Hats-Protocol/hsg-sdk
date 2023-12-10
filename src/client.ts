@@ -429,7 +429,7 @@ export class HatsSignerGateClient {
   //////////////////////////////////////////////////////////////*/
 
   /**
-   * Claim signer rights on the safe. Account must wear the signers hat
+   * Claim signer rights on the safe. Account must wear the Signers Hat
    *
    * @param account A Viem account
    * @param hsgInstance HSG's instance address
@@ -466,7 +466,7 @@ export class HatsSignerGateClient {
   }
 
   /**
-   * Check if a given account is a valid signer, i.e. is wearing the signers hat
+   * Check if a given account is a valid signer, i.e. is wearing the Signers Hat
    *
    * @param hsgInstance HSG's instance address
    * @param address The address to check
@@ -518,7 +518,7 @@ export class HatsSignerGateClient {
    *
    * @param account A Viem account
    * @param mhsgInstance MHSG's instance address
-   * @param hatId The hat id to claim signer rights for, must be a valid Signers Hat
+   * @param hatId The hat ID to claim signer rights for, must be a valid Signers Hat
    * @returns An object containing the status of the call and the transaction hash
    */
   async mhsgClaimSigner({
@@ -580,6 +580,7 @@ export class HatsSignerGateClient {
 
   /**
    * Add new approved Signers Hats
+   * The caller must a wearer of the MHSG's Owner Hat
    *
    * @param account A Viem account
    * @param mhsgInstance MHSG's instance address
@@ -649,6 +650,7 @@ export class HatsSignerGateClient {
 
   /**
    * Sets a new target threshold, and changes Safe's threshold if appropriate
+   * The caller must be a wearer of the HSG/MHSG's Owner Hat
    *
    * @param account A Viem account
    * @param instance HSG/MHSG instance address
@@ -690,6 +692,7 @@ export class HatsSignerGateClient {
 
   /**
    * Sets a new minimum threshold
+   * The caller must be a wearer of the HSG/MHSG's Owner Hat
    *
    * @param account A Viem account
    * @param instance HSG/MHSG instance address
@@ -730,8 +733,8 @@ export class HatsSignerGateClient {
   }
 
   /**
-   * Sets a Owner Hat
-   * Can only be called by the Owner Hat's wearer/s
+   * Sets a new Owner Hat
+   * The caller must be a wearer of the current HSG/MHSG's Owner Hat
    *
    * @param account A Viem account
    * @param instance HSG/MHSG instance address
@@ -831,7 +834,7 @@ export class HatsSignerGateClient {
    *
    * @param account A Viem account
    * @param instance HSG/MHSG instance address
-   * @param signer TThe address to remove if not a valid signer
+   * @param signer The address to remove if not a valid signer
    * @returns An object containing the status of the call and the transaction hash
    */
   async removeSigner({
@@ -952,14 +955,14 @@ export class HatsSignerGateClient {
   }
 
   /*//////////////////////////////////////////////////////////////
-                      HSG & MHSG Function Caller 
+                  HSG & MHSG Write Functions Caller 
   //////////////////////////////////////////////////////////////*/
 
   /**
    * Get the metadata object of HSG or MHSG
    *
-   * @param type The type of the contract, 'HSG' or 'MHSG'
-   * @returns The contract's metadata object
+   * @param type 'HSG' or 'MHSG'
+   * @returns The metadata object
    */
   getMetadata(type: HsgType): HsgMetadata {
     if (type === "HSG") {
@@ -977,7 +980,8 @@ export class HatsSignerGateClient {
    * @param account A Viem account
    * @param type 'HSG' or 'MHSG'
    * @param instance The MHSG/HSG instance address
-   * @param func The write function to call, including its arguments and their metadata
+   * @param func The write function to call
+   * @param args The arguments with which to call the provided function
    * @returns An object containing the status of the call and the transaction hash
    */
   async callInstanceWriteFunction({
