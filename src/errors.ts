@@ -256,7 +256,7 @@ export function getError(err: unknown): never {
         }
         case "InvalidTargetThreshold": {
           throw new InvalidTargetThresholdError(
-            `Error: Target threshold must be lower than the max amount of signers`
+            `Error: Target threshold must not be larger than the max amount of signers or smaller than the min threshold`
           );
         }
         case "InvalidMinThreshold": {
