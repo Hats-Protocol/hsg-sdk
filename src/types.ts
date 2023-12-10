@@ -43,7 +43,7 @@ export interface CallInstanceWriteFunctionResult extends TransactionResult {}
 export interface SetOwnerHatResult extends TransactionResult {}
 
 export type HsgMetadata = {
-  roles: Role[];
+  customRoles: Role[];
   writeFunctions: WriteFunction[];
   abi: Abi;
 };

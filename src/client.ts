@@ -41,6 +41,13 @@ export class HatsSignerGateClient {
   private readonly _walletClient: WalletClient;
   private readonly _chainId: string;
 
+  /**
+   * Create a HatsSignerGateClient
+   *
+   * @param publicClient Viem Public Client
+   * @param walletClient Viem Wallet Client
+   * @returns A HatsSignerGateClient instance
+   */
   constructor({
     publicClient,
     walletClient,
@@ -81,6 +88,17 @@ export class HatsSignerGateClient {
                         HSG Factory
   //////////////////////////////////////////////////////////////*/
 
+  /**
+   * Deploy a new HatsSignerGate and a new Safe, all wired up together
+   *
+   * @param account A Viem account
+   * @param ownerHatId ID of the HSG's Owner Hat
+   * @param signersHatId ID of the HSG's Signers Hat
+   * @param minThreshold HSG's min threshold
+   * @param targetThreshold HSG's target threshold
+   * @param maxSigners HSG's max amount of signers
+   * @returns An object containing the status of the call, the transaction hash, the new HSG instance and the new Safe
+   */
   async deployHatsSignerGateAndSafe({
     account,
     ownerHatId,
@@ -151,6 +169,23 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Deploy a new HatsSignerGate and relate it to an existing Safe
+   * In order to wire it up to the existing Safe, the owners of the Safe must enable it as a module and guard.
+   * WARNING: HatsSignerGate must not be attached to a Safe with any other modules.
+   * WARNING: HatsSignerGate must not be attached to its Safe if `validSignerCount()` >= `_maxSigners`
+   * Before wiring up HatsSignerGate to its Safe, call `canAttachHSGToSafe` and make sure the result is true
+   * Failure to do so may result in the Safe being locked forever
+   *
+   * @param account A Viem account
+   * @param ownerHatId ID of the HSG's Owner Hat
+   * @param signersHatId ID of the HSG's Signers Hat
+   * @param safe Existing Gnosis Safe that the signers will join
+   * @param minThreshold HSG's min threshold
+   * @param targetThreshold HSG's target threshold
+   * @param maxSigners HSG's max amount of signers
+   * @returns An object containing the status of the call, the transaction hash and the new HSG instance
+   */
   async deployHatsSignerGate({
     account,
     ownerHatId,
@@ -221,6 +256,17 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Deploy a new MultiHatsSignerGate and a new Safe, all wired up together
+   *
+   * @param account A Viem account
+   * @param ownerHatId ID of the MHSG's Owner Hat
+   * @param signersHatIds IDs of the MHSG's Signers Hats
+   * @param minThreshold MHSG's min threshold
+   * @param targetThreshold MHSG's target threshold
+   * @param maxSigners MHSG's max amount of signers
+   * @returns An object containing the status of the call, the transaction hash, the new MHSG instance and the new Safe
+   */
   async deployMultiHatsSignerGateAndSafe({
     account,
     ownerHatId,
@@ -291,6 +337,23 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Deploy a new MultiHatsSignerGate and relate it to an existing Safe
+   * In order to wire it up to the existing Safe, the owners of the Safe must enable it as a module and guard
+   * WARNING: MultiHatsSignerGate must not be attached to a Safe with any other modules
+   * WARNING: MultiHatsSignerGate must not be attached to its Safe if `validSignerCount()` >= `_maxSigners`
+   * Before wiring up MultiHatsSignerGate to its Safe, call `canAttachMHSGToSafe` and make sure the result is true
+   * Failure to do so may result in the Safe being locked forever
+   *
+   * @param account A Viem account
+   * @param ownerHatId ID of the MHSG's Owner Hat
+   * @param signersHatIds IDs of the MHSG's Signers Hats
+   * @param safe Existing Gnosis Safe that the signers will join
+   * @param minThreshold MHSG's min threshold
+   * @param targetThreshold MHSG's target threshold
+   * @param maxSigners MHSG's max amount of signers
+   * @returns An object containing the status of the call, the transaction hash and the new MHSG instance
+   */
   async deployMultiHatsSignerGate({
     account,
     ownerHatId,
@@ -365,6 +428,13 @@ export class HatsSignerGateClient {
                             HSG 
   //////////////////////////////////////////////////////////////*/
 
+  /**
+   * Claim signer rights on the safe. Account must wear the signers hat
+   *
+   * @param account A Viem account
+   * @param hsgInstance HSG's instance address
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async hsgClaimSigner({
     account,
     hsgInstance,
@@ -395,6 +465,13 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Check if a given account is a valid signer, i.e. is wearing the signers hat
+   *
+   * @param hsgInstance HSG's instance address
+   * @param address The address to check
+   * @returns 'true' if the address is a valid signer, 'false' otherwise
+   */
   async hsgIsValidSigner({
     hsgInstance,
     address,
@@ -412,6 +489,12 @@ export class HatsSignerGateClient {
     return isValid;
   }
 
+  /**
+   * Get a HSG's Signers Hat ID
+   *
+   * @param hsgInstance HSG's instance address
+   * @returns HSG's Signers Hat ID
+   */
   async hsgSignersHatId({
     hsgInstance,
   }: {
@@ -430,6 +513,14 @@ export class HatsSignerGateClient {
                             MHSG 
   //////////////////////////////////////////////////////////////*/
 
+  /**
+   * Claim signer rights on the safe. Account must wear the provided valid Signers Hat ID
+   *
+   * @param account A Viem account
+   * @param mhsgInstance MHSG's instance address
+   * @param hatId The hat id to claim signer rights for, must be a valid Signers Hat
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async mhsgClaimSigner({
     account,
     mhsgInstance,
@@ -463,6 +554,13 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Checks if a given account is a valid signer, i.e. is wearing one of the Signers Hats
+   *
+   * @param mhsgInstance MHSG's instance address
+   * @param address The address to check
+   * @returns 'true' if the given address is a valid signer, 'false' otherwise
+   */
   async mhsgIsValidSigner({
     mhsgInstance,
     address,
@@ -480,6 +578,14 @@ export class HatsSignerGateClient {
     return isValid;
   }
 
+  /**
+   * Add new approved Signers Hats
+   *
+   * @param account A Viem account
+   * @param mhsgInstance MHSG's instance address
+   * @param newSignerHats Array of Hat IDs to add as approved Signers Hats
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async mhsgAddSignerHats({
     account,
     mhsgInstance,
@@ -513,6 +619,13 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Checks if a given Hat is a valid Signers Hat
+   *
+   * @param mhsgInstance MHSG's instance address
+   * @param hatId The Hat to check
+   * @returns 'true' if the given Hat is a valid Signers Hat, 'false' otherwise
+   */
   async mhsgIsValidSignerHat({
     mhsgInstance,
     hatId,
@@ -534,6 +647,14 @@ export class HatsSignerGateClient {
                         Shared Functions 
   //////////////////////////////////////////////////////////////*/
 
+  /**
+   * Sets a new target threshold, and changes Safe's threshold if appropriate
+   *
+   * @param account A Viem account
+   * @param instance HSG/MHSG instance address
+   * @param targetThreshold The new target threshold to set
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async setTargetThreshold({
     account,
     instance,
@@ -567,6 +688,14 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Sets a new minimum threshold
+   *
+   * @param account A Viem account
+   * @param instance HSG/MHSG instance address
+   * @param minThreshold The new minimum threshold to set
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async setMinThreshold({
     account,
     instance,
@@ -600,6 +729,16 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Sets a Owner Hat
+   * Can only be called by the Owner Hat's wearer/s
+   *
+   * @param account A Viem account
+   * @param instance HSG/MHSG instance address
+   * @param newOwnerHat The new Owner Hat to set
+   * @param hatsContractAddress The Hats.sol contract address of the new Owner Hat
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async setOwnerHat({
     account,
     instance,
@@ -635,6 +774,12 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Tallies the number of existing Safe owners that wear a Signer Hat and updates the Safe's threshold if necessary
+   * Does NOT remove invalid Safe owners
+   *
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async reconcileSignerCount({
     account,
     instance,
@@ -665,6 +810,12 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Tallies the number of existing Safe owners that wear a Signers Hat
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns The number of valid signers on the Safe
+   */
   async validSignerCount({ instance }: { instance: Address }): Promise<bigint> {
     const count = await this._publicClient.readContract({
       address: instance,
@@ -675,6 +826,14 @@ export class HatsSignerGateClient {
     return count;
   }
 
+  /**
+   *  Removes an invalid signer from the Safe, updating its threshold if appropriate
+   *
+   * @param account A Viem account
+   * @param instance HSG/MHSG instance address
+   * @param signer TThe address to remove if not a valid signer
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async removeSigner({
     account,
     instance,
@@ -708,6 +867,12 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   * Get a HSG/MHSG's attached Safe
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns Address of the attached Safe
+   */
   async getSafe({ instance }: { instance: Address }): Promise<Address> {
     const safe = await this._publicClient.readContract({
       address: instance,
@@ -718,6 +883,12 @@ export class HatsSignerGateClient {
     return safe;
   }
 
+  /**
+   * Get a HSG/MHSG's min threshold
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns The insntace's min threshold
+   */
   async getMinThreshold({ instance }: { instance: Address }): Promise<bigint> {
     const minThreshold = await this._publicClient.readContract({
       address: instance,
@@ -728,6 +899,12 @@ export class HatsSignerGateClient {
     return minThreshold;
   }
 
+  /**
+   * Get a HSG/MHSG's target threshold
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns The insntace's target threshold
+   */
   async getTargetThreshold({
     instance,
   }: {
@@ -742,6 +919,12 @@ export class HatsSignerGateClient {
     return targetThreshold;
   }
 
+  /**
+   * Get a HSG/MHSG's max signers
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns The insntace's max signers
+   */
   async getMaxSigners({ instance }: { instance: Address }): Promise<bigint> {
     const maxSigners = await this._publicClient.readContract({
       address: instance,
@@ -752,6 +935,12 @@ export class HatsSignerGateClient {
     return maxSigners;
   }
 
+  /**
+   * Get a HSG/MHSG's Owner Hat
+   *
+   * @param instance HSG/MHSG instance address
+   * @returns The insntace's Owner Hat
+   */
   async getOwnerHat({ instance }: { instance: Address }): Promise<bigint> {
     const ownerHat = await this._publicClient.readContract({
       address: instance,
@@ -766,6 +955,12 @@ export class HatsSignerGateClient {
                       HSG & MHSG Function Caller 
   //////////////////////////////////////////////////////////////*/
 
+  /**
+   * Get the metadata object of HSG or MHSG
+   *
+   * @param type The type of the contract, 'HSG' or 'MHSG'
+   * @returns The contract's metadata object
+   */
   getMetadata(type: HsgType): HsgMetadata {
     if (type === "HSG") {
       return HSG_METADATA;
@@ -776,6 +971,15 @@ export class HatsSignerGateClient {
     }
   }
 
+  /**
+   *  Call a HSG/MHSG instance's write function
+   *
+   * @param account A Viem account
+   * @param type 'HSG' or 'MHSG'
+   * @param instance The MHSG/HSG instance address
+   * @param func The write function to call, including its arguments and their metadata
+   * @returns An object containing the status of the call and the transaction hash
+   */
   async callInstanceWriteFunction({
     account,
     type,

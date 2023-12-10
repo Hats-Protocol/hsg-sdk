@@ -2,7 +2,7 @@ import { HsgMetadata } from "./types";
 import { MULTI_HATS_SIGNER_GATE_ABI, HATS_SIGNER_GATE_ABI } from "./constants";
 
 export const HSG_METADATA: HsgMetadata = {
-  roles: [
+  customRoles: [
     {
       id: "hsgSignersHat",
       name: "HSG Signers Hat",
@@ -101,7 +101,7 @@ export const HSG_METADATA: HsgMetadata = {
 };
 
 export const MHSG_METADATA: HsgMetadata = {
-  roles: [
+  customRoles: [
     {
       id: "mhsgSignersHat",
       name: "MHSG Signers Hat",

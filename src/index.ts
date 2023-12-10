@@ -4,6 +4,13 @@ import {
   HATS_SIGNER_GATE_ABI,
   MULTI_HATS_SIGNER_GATE_ABI,
 } from "./constants";
+import type {
+  HsgMetadata,
+  Role,
+  WriteFunction,
+  WriteFunctionArg,
+  HsgType,
+} from "./types";
 
 export {
   HatsSignerGateClient,
@@ -11,3 +18,5 @@ export {
   HATS_SIGNER_GATE_ABI,
   MULTI_HATS_SIGNER_GATE_ABI,
 };
+
+export type { HsgMetadata, Role, WriteFunction, WriteFunctionArg, HsgType };
