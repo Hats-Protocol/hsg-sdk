@@ -94,6 +94,7 @@ describe("Client Tests With Metadata", () => {
   describe("Deploy HSG and a Safe", () => {
     let safe: Address;
     let hsg: Address;
+    let hsgSignerMaxOne: Address;
     beforeAll(async () => {
       const res = await hsgClient.deployHatsSignerGateAndSafe({
         account: account1,
@@ -105,6 +106,16 @@ describe("Client Tests With Metadata", () => {
       });
       safe = res.newSafeInstance;
       hsg = res.newHsgInstance;
+
+      const resOneMaxSigner = await hsgClient.deployHatsSignerGateAndSafe({
+        account: account1,
+        ownerHatId: hat1,
+        signersHatId: hat1_1,
+        minThreshold: 1n,
+        targetThreshold: 1n,
+        maxSigners: 1n,
+      });
+      hsgSignerMaxOne = resOneMaxSigner.newHsgInstance;
 
       await hatsClient.mintHat({
         account: account1,
@@ -153,6 +164,56 @@ describe("Client Tests With Metadata", () => {
         expect(numSigners).toBe(1n);
         expect(isValidSigner).toBe(true);
       });
+
+      test("Test claim rejects when already claimed", async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await expect(async () => {
+          await hsgClient.callInstanceWriteFunction({
+            account: account2,
+            type: "HSG",
+            instance: hsg,
+            func: metadata.writeFunctions[0],
+            args: [],
+          });
+        }).rejects.toThrow(
+          `Error: Signer ${account2.address} is already on the safe, cannot claim twice`
+        );
+      });
+
+      test("Test claim rejects for non valid signer", async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await expect(async () => {
+          await hsgClient.callInstanceWriteFunction({
+            account: account1,
+            type: "HSG",
+            instance: hsg,
+            func: metadata.writeFunctions[0],
+            args: [],
+          });
+        }).rejects.toThrow(
+          `Error: Address ${account1.address} is not a wearer of the signer Hat, only its wearers can become signers`
+        );
+      });
+
+      test("Test claim rejects when max signers reached", async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await hsgClient.hsgClaimSigner({
+          account: account2,
+          hsgInstance: hsgSignerMaxOne,
+        });
+
+        await expect(async () => {
+          await hsgClient.callInstanceWriteFunction({
+            account: account1,
+            type: "HSG",
+            instance: hsgSignerMaxOne,
+            func: metadata.writeFunctions[0],
+            args: [],
+          });
+        }).rejects.toThrow(
+          "Error: Can never have more signers than designated by the max amount of signers parameter"
+        );
+      });
     });
 
     describe("Reconcile Signer Count", () => {
@@ -192,7 +253,22 @@ describe("Client Tests With Metadata", () => {
     });
 
     describe("Remove Signer", () => {
-      beforeAll(async () => {
+      test("Test remove signer reverts for a valid signer", async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await expect(async () => {
+          await hsgClient.callInstanceWriteFunction({
+            account: account2,
+            type: "HSG",
+            instance: hsg,
+            func: metadata.writeFunctions[2],
+            args: [account2.address],
+          });
+        }).rejects.toThrow(
+          `Error: Address ${account2.address} still wears the signer Hat, can't remove a signer if they're still wearing the signer hat`
+        );
+      });
+
+      test("Test remove signer", async () => {
         await hatsClient.transferHat({
           account: account1,
           hatId: hat1_1,
@@ -208,9 +284,7 @@ describe("Client Tests With Metadata", () => {
           func: metadata.writeFunctions[2],
           args: [account2.address],
         });
-      });
 
-      test("Test remove signer", async () => {
         const numSigners = await hsgClient.validSignerCount({ instance: hsg });
         const isValidSigner = await hsgClient.hsgIsValidSigner({
           hsgInstance: hsg,
@@ -218,11 +292,26 @@ describe("Client Tests With Metadata", () => {
         });
         expect(numSigners).toBe(0n);
         expect(isValidSigner).toBe(false);
-      });
+      }, 30000);
     });
 
     describe("Test Set Min Threshold", () => {
-      beforeAll(async () => {
+      test("Test set min threshold reverts when invalid value", async () => {
+        const metadata = hsgClient.getMetadata("HSG");
+        await expect(async () => {
+          await hsgClient.callInstanceWriteFunction({
+            account: account1,
+            type: "HSG",
+            instance: hsg,
+            func: metadata.writeFunctions[3],
+            args: [10n],
+          });
+        }).rejects.toThrow(
+          `Error: Min threshold cannot be higher than the max amount of signers or the target threshold`
+        );
+      });
+
+      test("Test set min threshold", async () => {
         const metadata = hsgClient.getMetadata("HSG");
         await hsgClient.callInstanceWriteFunction({
           account: account1,
@@ -231,16 +320,28 @@ describe("Client Tests With Metadata", () => {
           func: metadata.writeFunctions[3],
           args: [1n],
         });
-      });
-
-      test("Test set min threshold", async () => {
         const minThreshod = await hsgClient.getMinThreshold({ instance: hsg });
         expect(minThreshod).toBe(1n);
       });
     });
 
     describe("Test Set Terget Threshold", () => {
-      beforeAll(async () => {
+      test("Test set target threshold reverts when invalid value", async () => {
+        await expect(async () => {
+          const metadata = hsgClient.getMetadata("HSG");
+          await hsgClient.callInstanceWriteFunction({
+            account: account1,
+            type: "HSG",
+            instance: hsg,
+            func: metadata.writeFunctions[5],
+            args: [20n],
+          });
+        }).rejects.toThrow(
+          `Error: Target threshold must not be larger than the max amount of signers or smaller than the min threshold`
+        );
+      });
+
+      test("Test set target threshold", async () => {
         const metadata = hsgClient.getMetadata("HSG");
         await hsgClient.callInstanceWriteFunction({
           account: account1,
@@ -249,9 +350,6 @@ describe("Client Tests With Metadata", () => {
           func: metadata.writeFunctions[5],
           args: [2n],
         });
-      });
-
-      test("Test set target threshold", async () => {
         const targetThreshod = await hsgClient.getTargetThreshold({
           instance: hsg,
         });
