@@ -763,7 +763,7 @@ export class HatsSignerGateClient {
   }
 
   /*//////////////////////////////////////////////////////////////
-                            MHSG 
+                      HSG & MHSG Function Caller 
   //////////////////////////////////////////////////////////////*/
 
   getMetadata(type: HsgType): HsgMetadata {

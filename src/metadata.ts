@@ -154,7 +154,7 @@ export const MHSG_METADATA: HsgMetadata = {
       ],
     },
     {
-      roles: ["hsgOwnerHat"],
+      roles: ["mhsgOwnerHat"],
       functionName: "setMinThreshold",
       label: "Set Min Threshold",
       description: "Sets a new minimum threshold",
@@ -168,7 +168,7 @@ export const MHSG_METADATA: HsgMetadata = {
       ],
     },
     {
-      roles: ["hsgOwnerHat"],
+      roles: ["mhsgOwnerHat"],
       functionName: "setOwnerHat",
       label: "Set Owner Hat",
       description: "Sets a new Owner Hat",
@@ -188,7 +188,7 @@ export const MHSG_METADATA: HsgMetadata = {
       ],
     },
     {
-      roles: ["hsgOwnerHat"],
+      roles: ["mhsgOwnerHat"],
       functionName: "setTargetThreshold",
       label: "Set Target Threshold",
       description:
@@ -203,7 +203,7 @@ export const MHSG_METADATA: HsgMetadata = {
       ],
     },
     {
-      roles: ["hsgOwnerHat"],
+      roles: ["mhsgOwnerHat"],
       functionName: "addSignerHats",
       label: "Add Signer Hats",
       description: "Add new approved signer hats",
