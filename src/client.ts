@@ -580,7 +580,7 @@ export class HatsSignerGateClient {
 
   /**
    * Add new approved Signers Hats
-   * The caller must a wearer of the MHSG's Owner Hat
+   * The caller must be a wearer of the MHSG's Owner Hat
    *
    * @param account A Viem account
    * @param mhsgInstance MHSG's instance address
@@ -621,13 +621,13 @@ export class HatsSignerGateClient {
   }
 
   /**
-   * Checks if a given Hat is a valid Signers Hat
+   * Check if a given Hat is a valid Signers Hat
    *
    * @param mhsgInstance MHSG's instance address
    * @param hatId The Hat to check
    * @returns 'true' if the given Hat is a valid Signers Hat, 'false' otherwise
    */
-  async mhsgIsValidSignerHat({
+  async mhsgIsValidSignersHat({
     mhsgInstance,
     hatId,
   }: {
@@ -778,7 +778,7 @@ export class HatsSignerGateClient {
   }
 
   /**
-   * Tallies the number of existing Safe owners that wear a Signer Hat and updates the Safe's threshold if necessary
+   * Tallies the number of existing Safe owners that wear a Signers Hat and updates the Safe's threshold if necessary
    * Does NOT remove invalid Safe owners
    *
    * @returns An object containing the status of the call and the transaction hash
@@ -890,7 +890,7 @@ export class HatsSignerGateClient {
    * Get a HSG/MHSG's min threshold
    *
    * @param instance HSG/MHSG instance address
-   * @returns The insntace's min threshold
+   * @returns The instance's min threshold
    */
   async getMinThreshold({ instance }: { instance: Address }): Promise<bigint> {
     const minThreshold = await this._publicClient.readContract({
@@ -906,7 +906,7 @@ export class HatsSignerGateClient {
    * Get a HSG/MHSG's target threshold
    *
    * @param instance HSG/MHSG instance address
-   * @returns The insntace's target threshold
+   * @returns The instance's target threshold
    */
   async getTargetThreshold({
     instance,
@@ -926,7 +926,7 @@ export class HatsSignerGateClient {
    * Get a HSG/MHSG's max signers
    *
    * @param instance HSG/MHSG instance address
-   * @returns The insntace's max signers
+   * @returns The instance's max signers
    */
   async getMaxSigners({ instance }: { instance: Address }): Promise<bigint> {
     const maxSigners = await this._publicClient.readContract({
@@ -942,7 +942,7 @@ export class HatsSignerGateClient {
    * Get a HSG/MHSG's Owner Hat
    *
    * @param instance HSG/MHSG instance address
-   * @returns The insntace's Owner Hat
+   * @returns The instance's Owner Hat
    */
   async getOwnerHat({ instance }: { instance: Address }): Promise<bigint> {
     const ownerHat = await this._publicClient.readContract({

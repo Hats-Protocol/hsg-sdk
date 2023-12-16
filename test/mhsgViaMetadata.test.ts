@@ -134,7 +134,7 @@ describe("Client Tests With Metadata", () => {
       const maxSigners = await hsgClient.getMaxSigners({
         instance: mhsg,
       });
-      const isValidSignerHat = await hsgClient.mhsgIsValidSignerHat({
+      const isValidSignerHat = await hsgClient.mhsgIsValidSignersHat({
         mhsgInstance: mhsg,
         hatId: hat1_1,
       });
@@ -374,7 +374,7 @@ describe("Client Tests With Metadata", () => {
       });
 
       test("Test add signer hat", async () => {
-        const isValidSignerHat = await hsgClient.mhsgIsValidSignerHat({
+        const isValidSignerHat = await hsgClient.mhsgIsValidSignersHat({
           mhsgInstance: mhsg,
           hatId: hat1,
         });

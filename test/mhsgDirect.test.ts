@@ -134,7 +134,7 @@ describe("Client Tests", () => {
       const maxSigners = await hsgClient.getMaxSigners({
         instance: mhsg,
       });
-      const isValidSignerHat = await hsgClient.mhsgIsValidSignerHat({
+      const isValidSignerHat = await hsgClient.mhsgIsValidSignersHat({
         mhsgInstance: mhsg,
         hatId: hat1_1,
       });
@@ -332,7 +332,7 @@ describe("Client Tests", () => {
           mhsgInstance: mhsg,
           newSignerHats: [hat1_2],
         });
-        const isValidHat = await hsgClient.mhsgIsValidSignerHat({
+        const isValidHat = await hsgClient.mhsgIsValidSignersHat({
           mhsgInstance: mhsg,
           hatId: hat1_2,
         });
