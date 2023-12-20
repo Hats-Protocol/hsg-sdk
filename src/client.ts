@@ -34,6 +34,7 @@ import {
   CallInstanceWriteFunctionResult,
   HsgMetadata,
   HsgType,
+  HsgParameter,
 } from "./types";
 
 export class HatsSignerGateClient {
@@ -955,7 +956,7 @@ export class HatsSignerGateClient {
   }
 
   /*//////////////////////////////////////////////////////////////
-                  HSG & MHSG Write Functions Caller 
+                    HSG & MHSG Handlers 
   //////////////////////////////////////////////////////////////*/
 
   /**
@@ -1023,5 +1024,117 @@ export class HatsSignerGateClient {
     } catch (err) {
       getError(err);
     }
+  }
+
+  /**
+   * Get HSG/MHSG instance's parameters.
+   *
+   * @param instance - The instace address.
+   * @returns A list of objects, for each parameter. Each object includes the parameter's value, label, Solidity type and display type.
+   */
+  async getInstanceParameters(instance: Address): Promise<HsgParameter[]> {
+    const hsgParameters: HsgParameter[] = [];
+
+    // safe param
+    try {
+      const safeValue = await this._publicClient.readContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "safe",
+      });
+
+      hsgParameters.push({
+        label: "Safe Multisig",
+        value: safeValue,
+        solidityType: "address",
+        displayType: "default",
+      });
+    } catch (err) {
+      throw new Error(
+        `Failed reading function 'safe' from the module instance`
+      );
+    }
+
+    // min threshold param
+    try {
+      const minThresholdValue = await this._publicClient.readContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "minThreshold",
+      });
+
+      hsgParameters.push({
+        label: "Min Threshold",
+        value: minThresholdValue,
+        solidityType: "uint256",
+        displayType: "default",
+      });
+    } catch (err) {
+      throw new Error(
+        `Failed reading function 'minThreshold' from the module instance`
+      );
+    }
+
+    // target threshold param
+    try {
+      const targetThresholdValue = await this._publicClient.readContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "targetThreshold",
+      });
+
+      hsgParameters.push({
+        label: "Target Threshold",
+        value: targetThresholdValue,
+        solidityType: "uint256",
+        displayType: "default",
+      });
+    } catch (err) {
+      throw new Error(
+        `Failed reading function 'targetThreshold' from the module instance`
+      );
+    }
+
+    // max signers param
+    try {
+      const maxSignersValue = await this._publicClient.readContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "maxSigners",
+      });
+
+      hsgParameters.push({
+        label: "Max Signers",
+        value: maxSignersValue,
+        solidityType: "uint256",
+        displayType: "default",
+      });
+    } catch (err) {
+      throw new Error(
+        `Failed reading function 'maxSigners' from the module instance`
+      );
+    }
+
+    // owner hat param
+    try {
+      const ownerHatValue = await this._publicClient.readContract({
+        address: instance,
+        abi: HATS_SIGNER_GATE_BASE_ABI,
+        functionName: "ownerHat",
+      });
+
+      hsgParameters.push({
+        label: "Owner Hat",
+        value: ownerHatValue,
+        solidityType: "uint256",
+        displayType: "hat",
+      });
+    } catch (err) {
+      throw new Error(
+        `Failed reading function 'ownerHat' from the module instance`
+      );
+    }
+
+    return hsgParameters;
   }
 }
