@@ -72,6 +72,13 @@ export type WriteFunctionArg = {
   optional?: boolean;
 };
 
+export type HsgParameter = {
+  label: string;
+  value: unknown;
+  solidityType: string;
+  displayType: string;
+};
+
 export type ArgumentTsType =
   | "number"
   | "bigint"

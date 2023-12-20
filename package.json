@@ -1,6 +1,6 @@
 {
   "name": "@hatsprotocol/hsg-sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Haberdasher Labs",
   "license": "MIT",
   "main": "dist/hsg-sdk.cjs.js",

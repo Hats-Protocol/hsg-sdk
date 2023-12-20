@@ -143,6 +143,16 @@ describe("Client Tests With Metadata", () => {
       expect(signersHat).toBe(hat1_1);
     });
 
+    test("Test get instance params", async () => {
+      const params = await hsgClient.getInstanceParameters(hsg);
+      expect(params.length).toBe(5);
+      expect(params[0].value).toBe(safe);
+      expect(params[1].value).toBe(2n);
+      expect(params[2].value).toBe(3n);
+      expect(params[3].value).toBe(5n);
+      expect(params[4].value).toBe(hat1);
+    });
+
     describe("Account claims signer rights", () => {
       beforeAll(async () => {
         const metadata = hsgClient.getMetadata("HSG");
