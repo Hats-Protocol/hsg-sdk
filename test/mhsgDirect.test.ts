@@ -168,7 +168,7 @@ describe("Client Tests", () => {
         });
         expect(numSigners).toBe(1n);
         expect(isValidSigner).toBe(true);
-      }, 30000);
+      });
 
       test("Test claimedAndStillValid returns true", async () => {
         const claimedAndValid = await hsgClient.claimedAndStillValid({
