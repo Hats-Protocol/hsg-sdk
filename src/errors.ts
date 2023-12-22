@@ -324,6 +324,8 @@ export function getError(err: unknown): never {
           throw err;
         }
       }
+    } else {
+      throw err;
     }
   } else {
     if (err instanceof Error) {
