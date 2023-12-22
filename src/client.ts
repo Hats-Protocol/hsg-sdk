@@ -955,6 +955,59 @@ export class HatsSignerGateClient {
     return ownerHat;
   }
 
+  /**
+   * Check if a given address has claimed signer rights, and is still valid.
+   *
+   * @param instance HSG/MHSG instance address
+   * @param address The address to check
+   * @returns 'true' if the address is one of the safe's owners and is still valid, 'false' otherwise
+   */
+  async claimedAndStillValid({
+    instance,
+    address,
+  }: {
+    instance: Address;
+    address: Address;
+  }): Promise<boolean> {
+    const safe = await this.getSafe({ instance });
+    const results = await this._publicClient.multicall({
+      contracts: [
+        {
+          address: safe,
+          functionName: "isOwner",
+          abi: [
+            {
+              type: "function",
+              name: "isOwner",
+              inputs: [
+                { name: "owner", type: "address", internalType: "address" },
+              ],
+              outputs: [{ name: "", type: "bool", internalType: "bool" }],
+              stateMutability: "view",
+            },
+          ],
+          args: [address],
+        },
+        {
+          address: instance,
+          functionName: "isValidSigner",
+          abi: HATS_SIGNER_GATE_BASE_ABI,
+          args: [address],
+        },
+      ],
+    });
+
+    if (results[0].status !== "success" || results[1].status !== "success") {
+      throw new Error("Error: could not retrieve account's status");
+    }
+
+    if (results[0].result === true && results[1].result === true) {
+      return true;
+    }
+
+    return false;
+  }
+
   /*//////////////////////////////////////////////////////////////
                     HSG & MHSG Handlers 
   //////////////////////////////////////////////////////////////*/
