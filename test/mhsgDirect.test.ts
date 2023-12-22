@@ -147,15 +147,20 @@ describe("Client Tests", () => {
     });
 
     describe("Account claims signer rights", () => {
-      beforeAll(async () => {
+      test("Test claimedAndStillValid returns false", async () => {
+        const claimedAndValid = await hsgClient.claimedAndStillValid({
+          instance: mhsg,
+          address: account2.address,
+        });
+        expect(claimedAndValid).toBe(false);
+      });
+
+      test("Test claim is successful", async () => {
         await hsgClient.mhsgClaimSigner({
           account: account2,
           mhsgInstance: mhsg,
           hatId: hat1_1,
         });
-      });
-
-      test("Test claim is successful", async () => {
         const numSigners = await hsgClient.validSignerCount({ instance: mhsg });
         const isValidSigner = await hsgClient.mhsgIsValidSigner({
           mhsgInstance: mhsg,
@@ -163,6 +168,14 @@ describe("Client Tests", () => {
         });
         expect(numSigners).toBe(1n);
         expect(isValidSigner).toBe(true);
+      }, 30000);
+
+      test("Test claimedAndStillValid returns true", async () => {
+        const claimedAndValid = await hsgClient.claimedAndStillValid({
+          instance: mhsg,
+          address: account2.address,
+        });
+        expect(claimedAndValid).toBe(true);
       });
 
       test("Test claim rejects when already claimed", async () => {
