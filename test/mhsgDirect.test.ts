@@ -1,7 +1,7 @@
 import { HatsSignerGateClient } from "../src/index";
 import { HatsClient } from "@hatsprotocol/sdk-v1-core";
 import { createPublicClient, createWalletClient, http } from "viem";
-import { goerli } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { createAnvil } from "@viem/anvil";
 import { privateKeyToAccount } from "viem/accounts";
 import type {
@@ -28,7 +28,7 @@ describe("Client Tests", () => {
 
   beforeAll(async () => {
     anvil = createAnvil({
-      forkUrl: process.env.GOERLI_RPC,
+      forkUrl: process.env.SEPOLIA_RPC,
       startTimeout: 20000,
     });
     await anvil.start();
@@ -42,18 +42,18 @@ describe("Client Tests", () => {
 
     // init Viem clients
     publicClient = createPublicClient({
-      chain: goerli,
+      chain: sepolia,
       transport: http("http://127.0.0.1:8545"),
     });
     walletClient = createWalletClient({
-      chain: goerli,
+      chain: sepolia,
       transport: http("http://127.0.0.1:8545"),
     });
 
     hsgClient = new HatsSignerGateClient({ publicClient, walletClient });
 
     hatsClient = new HatsClient({
-      chainId: goerli.id,
+      chainId: sepolia.id,
       publicClient: publicClient,
       walletClient: walletClient,
     });
@@ -122,7 +122,7 @@ describe("Client Tests", () => {
         hatId: hat1_1,
         wearer: account2.address,
       });
-    });
+    }, 30000);
 
     test("Test deployment", async () => {
       const numSigners = await hsgClient.validSignerCount({ instance: mhsg });
