@@ -9,9 +9,9 @@ import {
 import {
   MissingPublicClientError,
   ChainIdMismatchError,
-  MissingWalletClientError,
   NoChainError,
   ChainNotSupportedError,
+  MissingWalletClientError,
   getError,
 } from "./errors";
 import { checkWriteFunctionArgs } from "./utils";
@@ -39,7 +39,7 @@ import {
 
 export class HatsSignerGateClient {
   private readonly _publicClient: PublicClient;
-  private readonly _walletClient: WalletClient;
+  private readonly _walletClient: WalletClient | undefined;
   private readonly _chainId: string;
 
   /**
@@ -54,35 +54,37 @@ export class HatsSignerGateClient {
     walletClient,
   }: {
     publicClient: PublicClient;
-    walletClient: WalletClient;
+    walletClient?: WalletClient;
   }) {
     if (publicClient === undefined) {
       throw new MissingPublicClientError("Error: public client is required");
     }
-    if (walletClient === undefined) {
-      throw new MissingWalletClientError("Error: wallet client is required");
+    if (walletClient !== undefined) {
+      if (walletClient.chain === undefined) {
+        throw new NoChainError("Error: Viem client with no chain");
+      }
+      if (walletClient.chain?.id !== publicClient.chain?.id) {
+        throw new ChainIdMismatchError(
+          "Error: provided chain id should match the wallet client chain id"
+        );
+      }
     }
-    if (walletClient.chain?.id !== publicClient.chain?.id) {
-      throw new ChainIdMismatchError(
-        "Error: provided chain id should match the wallet client chain id"
-      );
-    }
-    if (walletClient.chain === undefined) {
+    if (publicClient.chain === undefined) {
       throw new NoChainError("Error: Viem client with no chain");
     }
     if (
       !Object.keys(HATS_SIGNER_GATE_FACTORY).includes(
-        walletClient.chain.id.toString()
+        publicClient.chain.id.toString()
       )
     ) {
       throw new ChainNotSupportedError(
-        `Error: chain ID ${walletClient.chain.id} is not supported`
+        `Error: chain ID ${publicClient.chain.id} is not supported`
       );
     }
 
     this._publicClient = publicClient;
     this._walletClient = walletClient;
-    this._chainId = walletClient.chain.id.toString();
+    this._chainId = publicClient.chain.id.toString();
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -115,6 +117,12 @@ export class HatsSignerGateClient {
     targetThreshold: bigint;
     maxSigners: bigint;
   }): Promise<DeployHatsSignerGateAndSafeResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: HATS_SIGNER_GATE_FACTORY[this._chainId],
@@ -204,6 +212,12 @@ export class HatsSignerGateClient {
     targetThreshold: bigint;
     maxSigners: bigint;
   }): Promise<DeployHatsSignerGateResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: HATS_SIGNER_GATE_FACTORY[this._chainId],
@@ -283,6 +297,12 @@ export class HatsSignerGateClient {
     targetThreshold: bigint;
     maxSigners: bigint;
   }): Promise<DeployMultiHatsSignerGateAndSafeResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: HATS_SIGNER_GATE_FACTORY[this._chainId],
@@ -372,6 +392,12 @@ export class HatsSignerGateClient {
     targetThreshold: bigint;
     maxSigners: bigint;
   }): Promise<DdeployMultiHatsSignerGateResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: HATS_SIGNER_GATE_FACTORY[this._chainId],
@@ -443,6 +469,12 @@ export class HatsSignerGateClient {
     account: Account | Address;
     hsgInstance: Address;
   }): Promise<HsgClaimSignerResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: hsgInstance,
@@ -531,6 +563,12 @@ export class HatsSignerGateClient {
     mhsgInstance: Address;
     hatId: bigint;
   }): Promise<MhsgClaimSignerResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: mhsgInstance,
@@ -597,6 +635,12 @@ export class HatsSignerGateClient {
     mhsgInstance: Address;
     newSignerHats: bigint[];
   }): Promise<MhsgAddSignerHatsResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: mhsgInstance,
@@ -667,6 +711,12 @@ export class HatsSignerGateClient {
     instance: Address;
     targetThreshold: bigint;
   }): Promise<SetTargetThresholdResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: instance,
@@ -709,6 +759,12 @@ export class HatsSignerGateClient {
     instance: Address;
     minThreshold: bigint;
   }): Promise<SetMinThresholdResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: instance,
@@ -754,6 +810,12 @@ export class HatsSignerGateClient {
     newOwnerHat: bigint;
     hatsContractAddress: Address;
   }): Promise<SetOwnerHatResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: instance,
@@ -791,6 +853,12 @@ export class HatsSignerGateClient {
     account: Account | Address;
     instance: Address;
   }): Promise<ReconcileSignerCountResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: instance,
@@ -847,6 +915,12 @@ export class HatsSignerGateClient {
     instance: Address;
     signer: Address;
   }): Promise<RemoveSignerResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     try {
       const { request } = await this._publicClient.simulateContract({
         address: instance,
@@ -1051,6 +1125,12 @@ export class HatsSignerGateClient {
     func: WriteFunction;
     args: unknown[];
   }): Promise<CallInstanceWriteFunctionResult> {
+    if (this._walletClient === undefined) {
+      throw new MissingWalletClientError(
+        "Error: the client was initialized without a wallet client, which is required for this function"
+      );
+    }
+
     const metadata = this.getMetadata(type);
 
     checkWriteFunctionArgs({ func, args });
