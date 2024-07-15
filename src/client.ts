@@ -59,16 +59,6 @@ export class HatsSignerGateClient {
     if (publicClient === undefined) {
       throw new MissingPublicClientError("Error: public client is required");
     }
-    if (walletClient !== undefined) {
-      if (walletClient.chain === undefined) {
-        throw new NoChainError("Error: Viem client with no chain");
-      }
-      if (walletClient.chain?.id !== publicClient.chain?.id) {
-        throw new ChainIdMismatchError(
-          "Error: provided chain id should match the wallet client chain id"
-        );
-      }
-    }
     if (publicClient.chain === undefined) {
       throw new NoChainError("Error: Viem client with no chain");
     }
